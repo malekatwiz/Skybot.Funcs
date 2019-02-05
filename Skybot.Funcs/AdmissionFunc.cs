@@ -35,9 +35,14 @@ namespace Skybot.Funcs
             log.LogInformation($"AdmissionFunc| SMS received..");
             if (RequestIsAuthorized(request))
             {
-                if (request.Form.TryGetValue("From", out var phoneNumber))
+                if (request.Form.TryGetValue("From", out var phoneNumber) &&
+                    request.Form.TryGetValue("Body", out var messageBody))
                 {
                     if (await AccountsClient.HasAccount(phoneNumber))
+                    {
+                        await PassQuery(phoneNumber, messageBody, log);
+                    }
+                    else
                     {
                         log.LogInformation($"AdmissionFunc| Sending request to create new account..");
                         await NewAccountsQueueClinet.SendAsync(new Message
@@ -46,15 +51,11 @@ namespace Skybot.Funcs
                             Body = new UserAccount {PhoneNumber = phoneNumber}.GetBytes()
                         });
                     }
-                    else
-                    {
-                        await PassQuery(phoneNumber, log);
-                    }
 
                     return new TwiMLResult();
                 }
 
-                log.LogInformation($"AdmissionFunc| Sender number is not available.");
+                log.LogInformation($"AdmissionFunc| Sender number or body is not available.");
                 return new BadRequestResult();
             }
 
@@ -67,16 +68,22 @@ namespace Skybot.Funcs
             return Settings.SecretKey.Equals(request.Query["key"], StringComparison.InvariantCulture);
         }
 
-        private static async Task PassQuery(string phoneNumber, ILogger log)
+        private static async Task PassQuery(string phoneNumber, string messageBody, ILogger log)
         {
             var userAccount = await AccountsClient.GetAccount(phoneNumber);
             log.LogInformation(
                 $"AdmissionFunc| Sending request to process query of '{userAccount.Name} / {userAccount.PhoneNumber}'");
 
+            var textMessage = new TextMessage
+            {
+                Account = userAccount,
+                Body = messageBody
+            };
+
             await ExistingAccountsQueueClient.SendAsync(new Message
             {
-                To = "ExistingAccounts",
-                Body = userAccount.GetBytes()
+                To = "incomingqueries",
+                Body = textMessage.GetBytes()
             });
         }
     }

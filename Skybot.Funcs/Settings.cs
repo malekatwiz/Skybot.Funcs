@@ -10,6 +10,7 @@ namespace Skybot.Funcs
         public static string SkybotAuthUri => GetEnvironmentVariable("AuthUri");
         public static string SkybotAccountsUri => GetEnvironmentVariable("AccountsUri");
         public static string SkybotTextoUri => GetEnvironmentVariable("SkybotTextoUri");
+        public static string SkybotAppUri => GetEnvironmentVariable("SkybotAppUri");
         public static string ServiceBusConnectionStringWithSend => GetEnvironmentVariable("ServiceBusConnectionStringSend");
         public static string ServiceBusConnectionStringWithListen => GetEnvironmentVariable("ServiceBusConnectionStringListen");
 

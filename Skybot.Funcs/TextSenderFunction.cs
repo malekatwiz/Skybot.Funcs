@@ -17,7 +17,7 @@ namespace Skybot.Funcs
         }
 
         [FunctionName("TextSenderFunc")]
-        public static async void Run([ServiceBusTrigger("outgoingtext", Connection = "")]
+        public static async void Run([ServiceBusTrigger("outgoingtext", Connection = "ServiceBusConnectionStringListen")]
             Message message, ILogger log)
         {
             var textMessage = message.Convert<TextMessage>();
