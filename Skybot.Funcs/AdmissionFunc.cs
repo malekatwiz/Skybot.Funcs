@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
+using Skybot.Funcs.Clients;
 using Skybot.Funcs.Extensions;
 using Skybot.Funcs.Models;
 using Twilio.AspNet.Core;
